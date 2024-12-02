@@ -60,4 +60,23 @@ export class LocationsService {
         : error;
     }
   }
+
+  async remove(id: string): Promise<void> {
+    try {
+      const result = await this.locationsRepository.delete({ id });
+
+      if (!result.affected) {
+        throw new ErrorManager({
+          type: 'INTERNAL_SERVER_ERROR',
+          message:
+            'Database error: Cannot delete contact. the location of contact not exist',
+        });
+      }
+    } catch (error) {
+      console.error(error);
+      throw error instanceof Error
+        ? ErrorManager.createSignatureError(error.message)
+        : error;
+    }
+  }
 }

@@ -12,7 +12,7 @@ export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('register')
-  async createDoctor(
+  async createUser(
     @Body() createDoctorDto: CreateUserDto,
   ): Promise<{ accessToken: string; user: User }> {
     return await this.authService.registerUser(createDoctorDto);

@@ -1,3 +1,4 @@
+import { Transform } from 'class-transformer';
 import { Contact } from 'src/contacts/entities/contact.entity';
 import {
   Column,
@@ -12,10 +13,12 @@ export class Location {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('float')
+  @Transform(({ value }) => parseFloat(value))
+  @Column('decimal', { precision: 11, scale: 8 })
   latitude: number;
 
-  @Column('float')
+  @Transform(({ value }) => parseFloat(value))
+  @Column('decimal', { precision: 11, scale: 8 })
   longitude: number;
 
   @Column({ nullable: true })

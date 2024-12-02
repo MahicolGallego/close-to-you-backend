@@ -77,12 +77,7 @@ export class ContactsService {
           message: 'Contact to update not found',
         });
 
-      if (updateContactDto.name) contact.name = updateContactDto.name;
-      if (updateContactDto.email) contact.email = updateContactDto.email;
-      if (updateContactDto.type) contact.type = updateContactDto.type;
-      if (updateContactDto.photo) contact.photo = updateContactDto.photo;
-      if (updateContactDto.phone) contact.phone = updateContactDto.phone;
-
+      // create, update or delete contact location information
       if (updateContactDto.latitude && updateContactDto.longitude) {
         if (contact.location) {
           contact.location.latitude = updateContactDto.latitude;
@@ -101,6 +96,23 @@ export class ContactsService {
           });
         }
       }
+
+      if (
+        updateContactDto.latitude === null &&
+        updateContactDto.longitude === null &&
+        contact.location
+      ) {
+        await this.locationsService.remove(contact.location.id);
+      }
+
+      // set new values, email and photo must accept null values
+      if (updateContactDto.name) contact.name = updateContactDto.name;
+      if (updateContactDto.email || updateContactDto.email === null)
+        contact.email = updateContactDto.email;
+      if (updateContactDto.type) contact.type = updateContactDto.type;
+      if (updateContactDto.photo || updateContactDto.photo === null)
+        contact.photo = updateContactDto.photo;
+      if (updateContactDto.phone) contact.phone = updateContactDto.phone;
 
       // The properties are extracted ignoring the location because typeorm identifies that
       // the entity does not have the relationship with location and when it wants to update
@@ -124,7 +136,10 @@ export class ContactsService {
           message: 'Database error: Cannot update contact',
         });
 
-      return contact;
+      // return the updated contact
+      return await this.contactsRepository.findOne({
+        where: { id, id_user },
+      });
     } catch (error) {
       console.error(error);
       throw error instanceof Error
